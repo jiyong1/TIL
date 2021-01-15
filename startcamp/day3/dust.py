@@ -1,7 +1,7 @@
 import requests
 import pprint
 
-city = input()
+city = "광주"
 a = str(city.encode('UTF-8'))
 b= a.strip("b'")
 c= b.split('\\x')
@@ -12,6 +12,11 @@ url2 = "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureD
 response = requests.get(url).json()
 
 total_count = response["response"]['body']['totalCount']
-print(f"{total_count}개의 결과를 획득하였습니다")
-for city_dic in response["response"]['body']['items']:
-    print(f"{city_dic['stationName']}의 미세먼지 농도는 {city_dic['pm10Value']}입니다")
+city_dic = response["response"]['body']['items'][4]
+txt = f"{city_dic['stationName']}의 미세먼지 농도는 {city_dic['pm10Value']}입니다."
+
+token = ""
+api_url = f"https://api.telegram.org/bot{token}"
+chat_id = ''
+send_url = f'{api_url}/sendMessage?chat_id={chat_id}&text={txt}'
+requests.get(send_url)
