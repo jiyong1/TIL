@@ -10,6 +10,7 @@ token = ""
 api_url = f"https://api.telegram.org/bot{token}"
 chat_id = ""
 txt = f"금일 국내 코로나 확진자 수는 {result} 입니다."
+print(result)
 
 send_url = f"{api_url}/sendMessage?chat_id={chat_id}&text={txt}"
 requests.get(send_url)
