@@ -65,5 +65,5 @@ class My_sort:
 
 my_lst = [9, 17, 5, 28, 24, 37, 48, 1, 19]
 sorted_lst = My_sort.quick_sort(my_lst)
-print(sorted_lst)
+# print(sorted_lst)
     

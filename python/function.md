@@ -575,6 +575,8 @@ print(fib(6))
 
 ![](function.assets/hanoi.jpg)
 
+![](function.assets/hanoi2.jpg)
+
 
 
 ```python

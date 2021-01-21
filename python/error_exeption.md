@@ -338,7 +338,189 @@ except ValueError:
 try:
     empty_list = []
     print(empty_list[-1])
-except IndexError as err:
+except IndexError as err: # 변수처럼
     print(f'{err}, 오류가 발생했습니다.')
 ```
+
+
+
+#### 복수의 예외처리
+
+- **활용법**
+
+```python
+try:
+    <코드 블럭 1>
+except (예외1, 예외2):
+    <코드 블럭 2>
+```
+
+```python
+try:
+    <코드 블럭 1>
+except 예외1:
+    <코드 블럭 2>
+except 예외2:
+    <코드 블럭 3>
+```
+
+
+
+- **예시**
+
+```python
+try : 
+    num = input('100으로 나눌 값을 입력하시오 : ')
+    print(100/int(num))
+except ZeroDivisionError:
+    print("0으로 어떻게 나누니?")
+except ValueError:
+    print("이걸 어떻게 숫자로 바꾸니?")
+```
+
+```
+100으로 나눌 값을 입력하시오 : -
+이걸 어떻게 숫자로 바꾸니?
+```
+
+```
+100으로 나눌 값을 입력하시오 : 0
+0으로 어떻게 나누니?
+```
+
+
+
+#### else
+
+- 에러가 발생하지 않는 경우 수행되는 문장은 `else`를 이용한다.
+- 모든 except 절 뒤에와야 한다.
+- try 절이 예외를 일으키지 않을 때 실행되어야만 하는 코드에 적절하다.
+
+
+
+- **활용법**
+
+```python
+try:
+    <코드 블럭 1>
+except 예외:
+    <코드 블럭 2>
+else:
+    <코드 블럭 3>
+```
+
+
+
+- **예시**
+
+```python
+try:
+    num = input('100으로 나눌 값을 입력하시오 : ')
+    print(100/int(num))
+except ZeroDivisionError:
+    print("0으로 어떻게 나누니?")
+except ValueError:
+    print("이걸 어떻게 숫자로 바꾸니?")
+else:
+    print("똑바로 입력해줘서 고마워ㅎㅎ")
+```
+
+```
+100으로 나눌 값을 입력하시오 : 5
+20.0
+똑바로 입력해줘서 고마워ㅎㅎ
+```
+
+```
+100으로 나눌 값을 입력하시오 : jiyong
+이걸 어떻게 숫자로 바꾸니?
+```
+
+
+
+#### finally
+
+- 반드시 수행해야하는 문장은 `finally`를 활용한다.
+- 즉, 모든 상황에 실행되어야만 하는 코드를 정의하는데 활용한다.
+- 예외의 발생 여부과 관계없이 try 문을 떠날 때 항상 실행한다.
+
+
+
+- **활용법**
+
+```python
+try:
+    <코드 블럭 1>
+except 예외:
+    <코드 블럭 2>
+finally:
+    <코드 블럭 3>
+```
+
+
+
+
+
+- **예시**
+
+```python
+try:
+    num = input('100으로 나눌 값을 입력하시오 : ')
+    print(100/int(num))
+except ZeroDivisionError:
+    print("0으로 어떻게 나누니?")
+except ValueError:
+    print("이걸 어떻게 숫자로 바꾸니?")
+except:
+    print('무슨 에러지.. 파악하시면 연락주세요~')
+else:
+    print("똑바로 입력해줘서 고마워ㅎㅎ")
+finally:
+    print("저는 이만 떠나겠습니다~")
+```
+
+```
+100으로 나눌 값을 입력하시오 : s3
+이걸 어떻게 숫자로 바꾸니?
+저는 이만 떠나겠습니다~
+```
+
+```
+100으로 나눌 값을 입력하시오 : 15
+6.666666666666667
+똑바로 입력해줘서 고마워ㅎㅎ
+저는 이만 떠나겠습니다~
+```
+
+
+
+
+
+#### 예외 발생 시키기(Exception Raising)
+
+**`raise`**를 통해 예외를 강제로 발생시킬 수 있습니다.
+
+
+
+- **활용법**
+
+```python
+raise <에러>('메시지')
+```
+
+
+
+- **예시**
+
+```python
+def avg(scores):
+    if len(scores) == 0:
+        raise ValueError('학생이 없습니다.')
+    else:
+        return round(sum(scores)/len(scores), 2)
+    
+avg(9)
+```
+
+
 

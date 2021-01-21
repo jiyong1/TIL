@@ -1,9 +1,5 @@
-# 
-def class_avg(students):
-    try:
-        return sum(students)/len(students)
-    except:
-        return 0
+from merging_sort import My_sort
 
-lst = []
-print(class_avg(lst))
+a = [1, 24, 451, 23, 412 ,18]
+result = My_sort.merge_sort(a)
+print(result)
