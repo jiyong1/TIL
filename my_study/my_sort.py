@@ -14,8 +14,8 @@ class My_sort:
 
             return cls.merging(sblst1, sblst2)
     
-    @classmethod
-    def merging(cls, lst1, lst2):
+    @staticmethod
+    def merging(lst1, lst2):
         
         fidx = tidx = 0
         tmp = []
@@ -61,9 +61,4 @@ class My_sort:
             big_lst = cls.quick_sort(big_lst)
 
             return small_lst + pivot_lst + big_lst
-            
-
-my_lst = [9, 17, 5, 28, 24, 37, 48, 1, 19]
-sorted_lst = My_sort.quick_sort(my_lst)
-# print(sorted_lst)
     

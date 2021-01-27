@@ -1,6 +1,7 @@
-from merging_sort import My_sort
+from my_sort import My_sort
 
-a = [1, 2, 35, 52]
-b = [1, 2, 35, 52]
+a = [13, 4, 16, 24, 13, 2]
+b = My_sort.merge_sort(a)
 
-print(a == b)
+
+print(b)
