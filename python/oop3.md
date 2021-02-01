@@ -163,8 +163,10 @@ class Child(Father, Mother):
         self.chromosome = Mother.chromosome[random.randint(0,1)] + Father.chromosome[random.randint(0,1)]
         if self.chromosome == 'XY':
             self.gender = '남자'
-        else:
+        elif self.chromosome == 'XX':
             self.gender = '여자'
+        else:
+            self.gender = '...'
             
     def gender_print(self):
         print(f'나는 {self.chromosome}염색체를 가진 {self.gender}야')
