@@ -29,9 +29,8 @@
 ## 회전 시 뒷면을 넣어보자.
 
 - div안에 두개의 div요소를 만든다 (앞면, 뒷면)
-
 - transform-style: preserve-3d;
-
 - backface-visibility: hidden;
-
-  
+- safari : -webkit-backface-...
+  - 브라우저마다 접두어를 붙여야하는 경우가 있다.
+  - 그럴 때는 접두어가 붙은 속성을 위에 모두 적고, 맨 아래에 기본속성을 넣어준다!
