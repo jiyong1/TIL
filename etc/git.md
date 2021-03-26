@@ -3,6 +3,8 @@
 > Git은 분산 버전 관리 시스템(DVCS)이다.
 >
 > 소스코드의 이력을 추적 & 관리한다. 개인 프로젝트 뿐만 아니라 협업 단계에서도 활용된다.
+>
+> 협업과 버전관리
 
 
 
@@ -111,3 +113,105 @@ $ git push origin master # origin -> gitlab
 
 
 
+### 웹 IDE
+
+웹에서 수정
+
+
+
+## 역행
+
+
+
+### restore
+
+
+
+### reset
+
+```bash
+$ git reset ????
+```
+
+- commit history도 과거로 돌아간다.
+
+
+
+### revert
+
+```bash
+$ git revert ????
+```
+
+- commit history는 그대로 남는다.
+- 코드를 되돌릴 수 있다.
+- 원격 저장소와 로컬 저장소의 충돌을 미연에 방지할 수 있다.
+
+
+
+## branch
+
+
+
+### branch 확인
+
+```bash
+$ git branch
+```
+
+- 관리하고 있는 `branch`의 목록을 볼 수 있다.
+
+
+
+### branch 생성
+
+```bash
+$ git branch branch_name
+```
+
+
+
+### branch 이동
+
+```bash
+$ git switch branch_name
+```
+
+- branch를 변경하고 데이터를 변경 후 commit 하면 이전 branch에서는 반영이 되지 않는다.
+- commit 기록, 실제 파일 모두 변경된다.
+
+
+
+### branch 삭제
+
+```bash
+$ git branch -d branch_name
+```
+
+
+
+### pull
+
+```bash
+$ git pull origin branch_name
+```
+
+
+
+### merge
+
+```bash
+$ git merge branch_name
+```
+
+- 같은 파일을 수정했을 경우 충돌이 일어난다.
+  - 적용할 파일을 선택하고 다시 add, commit
+- branch가 할 일이 끝나면 지운다.
+
+
+
+```bash
+git log --oneline --graph
+```
+
+- 그래프로 commit 도식화
