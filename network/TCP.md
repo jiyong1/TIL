@@ -1,3 +1,107 @@
+# TCP
+
+<br>
+
+## TCP overview
+
+- point to point
+- **reliable, in-order byte steam**
+  - 에러없이 유실되지 않고 전송된다.
+  - 전송 순서를 지켜가면서..
+- pipelined
+  - 한꺼번에 메시지가 많이 간다.
+- full duplex data
+  - 양쪽이 sender이자 receiver
+- connection-oriented
+- **flow controlled**
+  - TCP의 segment가 나가는 속도는 상대방의 상태 혹은 네트워크 상황 등에 맞게 정해진다.
+
+
+
+<br>
+
+## TCP segment structure
+
+<br>
+
+
+
+## TCP sequence number
+
+- byte stream
+
+<br>
+
+## TCP acknowledgements
+
+- 나는 몇번까지 완벽하게 받았고 몇번 seq를 기다린다.
+  - ex) ACK#100
+    - 99번까지 완벽하게 받았고 100 seq 기다리고 있다!
+- cumulative ACK
+
+<br>
+
+## TCP round trip time, timeout
+
+- 지정된 시간 안에 받았다는 응답이 오지 않으면 다시 segment를 보낸다.
+- RTT를 매번 segment를 보내고 받을때마다 측정한다.
+  - SAMPLE RTT
+  - **재전송한 segment는 sample rtt에 포함하지 않는다.**
+- `Estimated RTT = (1-a) * EstimatedRTT + a * Sample RTT` (a는 가중치)
+  - 일반적으로 `a = 0.125`
+- `TimeoutInterval = Estimated RTT + 4*DevRTT(safety margin)`
+
+
+
+## Buffer와 동작 과정
+
+각 소켓을 책임지는 TCP에 `send buff`, `receive buff`가 있다.
+
+<br>
+
+application이 socket으로 전송하는 속도와 TCP에서 전송하는 속도가 다르기 때문에 그 차이를 처리해야한다. 그래서 `send buff` 가 존재한다.
+
+<br>
+
+1. `send buff`에 존재하는 데이터를 하나 보내고 ACK을 기다리는 비효율적인 방법이 아니라 **한꺼번에 여러개의 데이터를 쏟아버린다.** 그렇다고 buffer에 존재하는 모든 데이터를 보내는 것이 아니라 한꺼번에 보내는 데이터의 양이 정해져 있다. (`window size`)
+   - window size : 1000bytes
+   - 각 200bytes인 데이터 5개 : seq#0, seq#200, seq#400, seq#600, seq#800
+2. 상대에게 `ACK#..`를 받으면 해당 데이터를 send buff에서 지우고 `send base`와 `window`그리고 `timer` 를 이동시킨다. ( `send buff`는 혹시라도 재전송해야하는 상황이 생길 것을 대비해 ACK를 받지 않은 데이터를 보관한다.  )
+   - `ACK#200` 을 받았다.
+   - send buff에서 seq#0을 제거하고 send base를 변경한다.
+   - window의 위치가 변경되었으니 버퍼에 존재하는 다른 데이터를 전송한다. ( `seq#1000` )
+3. 위와 같은 과정을 진행 중에 데이터 하나가 유실되어 하나를 건너띄어 받았다면 이전과 같은 ACK 를 보낸다. 받은 데이터를 위로 올려보내지 않는다. ( `receive buff` 는 `in-order delivery`를 위한 장치 )
+   - `seq#200`을 받지 않고 `seq#400` 부터 데이터를 받았다.
+   - 나는 `seq#200`을 기다린다는 의미로 똑같이 `ACK#200` 을 보낸다.
+   - 타임아웃이 일어나 다시 `seq#200` 을 다시 보낸다.
+   - 올바르게 받았다면 `ACK#1200` 을 보내고 receive buff에 쌓여있는 데이터를 올려보낸다.
+
+<br>
+
+**실제로는 receive buff ack와 send buff seq가 묶여서 같이 간다.**
+
+
+
+<br>
+
+
+
+## TCP fast retransmit
+
+> 타임아웃이 생각보다 많이 여유로운데.. send buff 입장에서 더 빠르게 유실을 판단하여 재전송하는 방법이 없을까..?
+
+<br>
+
+이전에 받은 ACK와 동일한 ACK를 3번 더 받았을 경우 유실됐다고 판단하여 데이터를 다시 보낸다..
+
+- 실험적으로 3번이 적당하다고 한다..
+
+
+
+<br>
+
+
+
 ## flow control
 
 - receive buff에 남은 공간을 `receive window`라 한다.
