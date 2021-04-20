@@ -30,14 +30,14 @@ print(value)
 
 
 
-## 반복문(Loop Statement)
+# 반복문(Loop Statement)
 
 - while
 - for
 
 
 
-### `while` 반복문
+## `while` 반복문
 
 > `while` 문은 조건식이 참(`True`)인 경우 반복적으로 코드를 실행한다.
 
@@ -85,7 +85,7 @@ while n>0:
 
 
 
-### `for` 문
+## `for` 문
 
 > `for` 문은 시퀀스(string, tuple, list, range)나 다른 순회가능한 객체(iterable)의 요소들을 순회한다.
 
@@ -111,7 +111,7 @@ for menu in ['김밥', '햄버거', '피자', '라면']:
 
 
 
-#### enumerate
+### enumerate
 
 > 인덱스(index)와 값(value)을 함께 활용 가능
 
