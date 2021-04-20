@@ -24,7 +24,9 @@
 
 <br>
 
+![](TCP.assets/tcpSegment.jpg)
 
+<br>
 
 ## TCP sequence number
 
@@ -154,7 +156,7 @@ application이 socket으로 전송하는 속도와 TCP에서 전송하는 속도
 - 2-way handshake가 아닌 이유
   - 서버 측 입장에서 자신들이 보낸 응답에 대한 수신이 양호한지에 대해 들을 수가 없다.
 
-
+![](TCP.assets/3wayHandshake.jpg)
 
 1. `client `: TCP SYN msg (대화를 시작하자..)
    - data 없이 header 부분만 채워서 간다.
@@ -176,3 +178,94 @@ application이 socket으로 전송하는 속도와 TCP에서 전송하는 속도
 5. `client` : ACK flag = 1 / ACK#y+1
    - 여기서 주의할 점은 ACK를 보냈다고 해서 바로 끝내는 것이 아니라 조금 기다렸다가 끝낸다.
    - 혹시 ACK가 유실되어서 server측에서 계속 FIN을 보낼 수 있기 때문에!
+
+<br>
+
+## TCP congestion control
+
+> 네트워크 혼잡 상황에 맞춰서 보내는 데이터 양을 결정한다.
+>
+> flow control과는 다르다.
+
+<br>
+
+### congestion 시나리오
+
+- 하나의 라우터, 유한한 크기를 갖는 buffer
+- 이상적으로 라우터의 buffer가 빈 공간이 있는지 알고 있다고 가정한다면 빈 공간이 존재할 때만 보내면 되니까 packet loss는 없을 것이다.
+- 그러나 현실적으로 빈 공간이 존재하는지 알 수 없기 때문에 packet loss가 일어날 수 밖에 없다.
+  - 재전송을 하게 된다.
+- 또한, packet loss가 일어나지 않았더라도 time out이 일어나 재전송이 일어날 수 있다.
+- `많이 보내서 네트워크가 막힌건데.. 네트워크가 막혀서 더 많이 보내게 된다..`
+
+<br>
+
+### congestion 시나리오 2
+
+- 여러개의 라우터
+- `upstream router` 부터 `downstream router`까지 단계 단계 거쳐가다 경쟁에서 이기지 못하고 packet loss가 일어난다.
+- 결국 이제까지 network resource를 사용한 것이 도루묵..
+
+<br>
+
+`조금의 손해를 보더라도 모두가 보내는 속도를 조절하면 잘 사용할 수 있다. 그 속도를 찾아보자..`
+
+그러기 위해서는 네트워크 상황을 인지하여야 한다.
+
+- `feedback` 을 근거로 네트워크 상황을 판단한다.
+
+<br>
+
+### additive increase / multiplicative decrease
+
+> send buff는 rcv buffer의 window size와 router의 buffer의 크기 중 최솟값을 window 사이즈로 한다.
+
+<br>
+
+- segment를 보내고 그에 대한 응답이 제대로 잘 들어온다면 `MSS(Maximum Segment Size)` 만큼  늘린다!
+  - **네트워크 상황이 좋다고 판단**하는 것
+- 피드백이 안오는 순간, 잘못됐다는 판단을 하고 **window size를 절반**으로 줄인다.
+- `조심스럽게 늘리고 팍 줄인다!`
+- 처음에는 매우 조심스럽게 접근한다. - `slow start phase`
+  - 1 MSS만 보내서 시작한다!
+  - 처음에 증가할 때는 배수로 증가한다! (`slow start threshold`를 지정하여 그 값을 넘어서면 linear하게 증가한다.)
+    - linear하게 증가하는 구간을 `Congestion Avoidance phase` 라고 불린다.
+  - 그러므로 금방 어느 수준에 도달할 수 있다.
+
+<br>
+
+![tcpCongestionControl](TCP.assets/tcpCongestionControl.png)
+
+[그림 출처](https://www.researchgate.net/figure/TCP-congestion-control-algorithms-The-congestion-window-size-depends-on-the-congestion_fig2_228825379)
+
+<br>
+
+### loss 종류에 따라 다른 대처
+
+> timer expired
+>
+> 3 duplicate ACK
+
+직관적으로 `timer expired`로 인한 loss가 일어났을 때가 `3 duplicate ACK (3번의 중복된 ACK)` 가 일어났을 때에 비하여 네트워크 상황이 안좋다는 것을 알 수 있다.
+
+<br>
+
+최초의 TCP에서는 어떤 종류의 loss가 일어나든지 간에 매우 겸손한 자세로 **congestion window size를 1 MSS로 변경하고 threshold 값을 timeout이 일어나기 전의 1/2로 줄인 후**, `slow start`를 시작한다.
+
+<br>
+
+두번째 TCP버전에서는 timer expired가 일어났을 때는 똑같이 동작을 하고,  `3 duplicate ACK`로 인한 loss라면 **congestion window size와 threshold 값을 현재 값의 1/2로 줄이고** `linear increase`를 시작한다.
+
+<br>
+
+---
+
+<br>
+
+## TCP throughput
+
+> TCP 속도
+>
+> TCP를 사용했을 때 네트워크 속도는 네트워크가 결정한다.
+
+- `avg TCP throughput = 3/4 * (W/RTT)` bytes/sec
