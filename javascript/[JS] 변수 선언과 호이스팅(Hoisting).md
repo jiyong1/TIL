@@ -44,3 +44,26 @@ name = 'jiyong';
 console.log(name); // jiyong이 출력된다.
 ```
 
+<br>
+
+## 함수 호이스팅
+
+> 함수 선언문이 코드의 선두로 끌어 올려진 것 처럼 동작하는 것
+
+
+
+```javascript
+// 함수 선언문
+function foo(){
+    console.log('foo');
+}
+
+// 함수 표현식
+var bar = function() {
+  console.log('bar');  
+};
+```
+
+- 함수 선언문은 `함수 호이스팅`이 일어난다.
+- 함수 표현식은 **변수 호이스팅**이 일어나므로 bar를 이전에 실행시킬 수 없다.
+
