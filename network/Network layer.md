@@ -33,6 +33,10 @@ forwarding table entry에 목적지의 주소가 모두 담겨있게 되면 tabl
 
 <br>
 
+---
+
+<br>
+
 
 
 ## Router architecture overview
@@ -44,6 +48,10 @@ forwarding table entry에 목적지의 주소가 모두 담겨있게 되면 tabl
   - 병렬적으로 처리하여 속도를 빠르게 하기 위해서
 - 아무리 연산속도가 빨라도 packet이 들어오는 속도가 더 빠를 수 있기 때문에 각 input port에 queue가 존재한다.
 - output port에도 몰릴 수 있기 때문에 queue가 존재한다.
+
+<br>
+
+---
 
 <br>
 
@@ -152,6 +160,12 @@ forwarding table entry에 목적지의 주소가 모두 담겨있게 되면 tabl
      - 클라이언트가 사용할 네트워크 정보를 요청
   4. DHCP ACK (서버 -> 클라이언트)
 
+<br>
+
+
+
+---
+
 
 
 <br>
@@ -186,3 +200,76 @@ link에서 지원할 수 있는 최대의 packet 사이즈를 `MTU (Maximum Tran
    - `fragflag` : 1 (제가 마지막입니다.)
    - `offset` : 370 (2960/8)
 
+<br>
+
+---
+
+<br>
+
+## routing algorithms
+
+<br>
+
+### Dijkstra's Algorithm
+
+> 라우팅 알고리즘
+
+~~알고리즘을 정리하는 곳은 아니니 간단하게..~~
+
+<br>
+
+#### 초기화
+
+모든 노드에 대해서 나랑 이웃한 노드에 대해서만 link cost로 distance를 초기화 하고 연결되지 않은 애들은 무한대로 초기화 한다.
+
+distance를 초기화하 할 때 바로 이전 노드도 함께 적어준다.
+
+<br>
+
+#### Loop
+
+최단 거리를 찾은 노드(N에 저장한 노드)를 제외한 노드 중 거리가 현재까지 가장 작은 노드를 선택한다.
+
+해당 노드를 최단 거리를 찾았다고 저장(N에 저장)하고 해당 노드와 이웃한 노드에 대해 최단 거리를 update 해준다. 마찬가지로 이전 노드에 대한 정보도 함께 저장한다.
+
+<br>
+
+위와 같은 알고리즘을 통해 `forwarding table`을 만들어 낸다.
+
+<br>
+
+#### ICMP (Internet Controll Message Protocol)
+
+> 네트워크 내부에서 발생하는 이벤트들에 대해서 서로 주고 받기 위한 signaling을 위한 프로토콜
+>
+> IP packet에 담겨서 간다.
+
+<br>
+
+위에서 언급한 다익스트라 알고리즘을 사용하려면 연결되는 링크에 대한 cost를 알아야하는데 이러한 정보들도 ICMP 통신을 통해 서로 주고 받는다.
+
+IP packet의 헤더의 필드 중 `destination addr`은 브로드캐스트 address (255.255.255.255)
+
+<br>
+
+### Distance vector algorithm
+
+> Bellman-Ford equation (dynamic programming)
+
+~~알고리즘을 정리하는 곳은 아니니 간단하게..~~
+
+- dx(y) = x에서 y까지의 최소 비용
+- cost(x, v) = x에서 v까지 가는데 걸리는 비용
+
+<br>
+
+결국 dx(y)는 인접 노드 중 하나로 시작될 것이다. 인접 노드에서 가지고 있는 `Distance array (Distance vector)`를 전달받아 목적지까지의 최소값을 알아낸다.
+
+- x 노드에서 인접 노드가 3개라고 했을 때, 결국 아래 세가지 중 하나일 것이다.
+  - c(x, v1) + dv1(y)
+  - c(x, v2) + dv2(y)
+  - c(x, v3) + dv3(y)
+
+<br>
+
+**결국 link state (다익스트라 알고리즘)과 다른 점은 주변 이웃이랑만 데이터를 주고 받는다.**
