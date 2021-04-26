@@ -28,7 +28,7 @@ var name = 'jiyong'
   - 변수 선언 : 런타임 이전에 먼저 실행
   - 값 할당 : 런타임에 실행
 
-![]([JS] 변수 선언과 호이스팅(Hoisting).assets/jsvariable.jpg)
+![](01_hoisting.assets/jsvariable.jpg)
 
 <br>
 

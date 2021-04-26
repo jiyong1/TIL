@@ -16,7 +16,7 @@ name = 'seventwo';
   - ES6에 도입된 `const` 키워드를 사용해 선언한 변수는 재할당이 금지된다.
 - 기존에 저장되어 있던 메모리 공간에서 값을 지우고 새로운 값을 저장하는 것이 아니라 **새로운 메모리 공간을 확보한다.**
 
-![]([JS] 값 재할당.assets/jsre.jpg)
+![](02_reassignment.assets/jsre.jpg)
 
 - name의 이전 값인 undefined와 'jiyong'은 어떤 변수도 값으로 가지고 있지 않다.
   - 더 이상 필요하지 않다는 것을 의미한다.

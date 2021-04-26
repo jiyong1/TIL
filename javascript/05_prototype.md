@@ -26,7 +26,7 @@ const seventwo = new Person('seventwo');
 
 생성자 함수는 위와 같이 동일한 프로퍼티 구조를 갖는 객체를 여러 개 생성할 때 매우 유용하다. 하지만 **Person 생성자는 객체를 생성할 때마다 greeting 메서드를 중복 생성하고 모든 인스턴스가 중복 소유한다.**
 
-![]([JS] 프로토타입.assets/objectmethod.jpg)
+![](05_prototype.assets/objectmethod.jpg)
 
 <br>
 
@@ -42,7 +42,7 @@ Person.prototype.greeting = function() {
 };
 ```
 
-![]([JS] 프로토타입.assets/prototype.jpg)
+![](05_prototype.assets/prototype.jpg)
 
 greeting 메서드를 하나만 생성하여 Person.prototype의 메서드로 할당하였다. 따라서 Person 생성자가 생성하는 모든 객체들은 greeting 메서드를 상속받아 사용할 수 있다.
 
