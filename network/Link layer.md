@@ -8,6 +8,8 @@ app layer (message) -> transfer layer (segment) -> network layer (packet) -> `li
 
 <br>
 
+![](Link layer.assets/linklayer.jpg)
+
 ## Multiple access links, protocols (MAC)
 
 <br>
@@ -68,6 +70,17 @@ link layer에서는 `feedback (ACK)`이 없기 때문에 collision detect가 100
 
 <br>
 
+#### 충돌이 일어났는데 충돌 탐지를 하지 못하는 경우
+
+- A에서 frame을 전송한다. (아주 작은 frame)
+- frame을 다 전송하자마자 다른 곳에서 충돌되는 frame을 보냈다.
+
+이러한 경우를 방지하기 위해서 `propagation delay`에 연관지어 `Minimum frame`사이즈 지정해놓았고,  Minimum frame 사이즈 이상의 frame을 보내야한다.
+
+만약 minimum보다 작은 사이즈만 보내는 경우라면 `padding`을 넣어서 보낸다.
+
+<br>
+
 ### Taking turns Mac protocols
 
 토큰이 있는 host가 데이터를 전송한다.
@@ -86,8 +99,68 @@ link layer에서는 `feedback (ACK)`이 없기 때문에 collision detect가 100
 
 - `header`
   - preamble - ethernet frame 이다
-  - destination address : `MAC address`
-  - source address : `MAC address`
+  - destination address : `MAC address` (48 bits)
+  - source address : `MAC address` (48 bits)
   - type
 - `data`
   - IP packet
+
+<br>
+
+## MAC address
+
+> IP 주소는 위치에 종속되어 계속 바뀔 수 있지만
+>
+> MAC 주소는 unique 하다.
+
+- 앞 24bit : 제조사
+- 뒤 24bit : 제품 번호
+
+<br>
+
+## ARP (address resolution protocol)
+
+> IP주소를 가지고 MAC 주소를 얻어온다.
+
+최초에 DHCP(Dynamic Host Configuration Protocol)을 통해서 GateWayRouter의 IP주소를 얻어오지만,  해당 interface의 MAC 주소는 알지 못한다. 이를 어떻게 해결할 것인가?
+
+- 지금 1.1.1.1 IP 주소를 가지고 있는 분은 MAC 주소 좀 알려주세요~ (`broadcast`)
+  - 위의 packet을 `ARP query` 라고 한다.
+  - frame header type에 ARP query임을 명시한다.
+    - 이외에도 IP packet, ARP response 등의 type이 존재한다.
+
+<br>
+
+- frame header
+  - type : ARP query
+  - src : 나의 MAC address
+  - dst : FF-FF-FF-FF-FF-FF (broadcast)
+- data
+  - 1.1.1.1 주소를 가지고 있는 분 MAC 주소 좀 알려주세요.
+
+<br>
+
+이후 알게된 정보를 `ARP TABLE`에 정보를 남겨둔다. 이를 참조하여 다음 interface로 이동한다.
+
+router와 router 사이에서도 forwarding table을 참조하여 dst IP address를 알아내고, dst IP address와 ARP TABLE을 통해 다음 interface의 MAC주소를 얻어내는 형식으로 최종 목적지까지 이동한다.
+
+<br>
+
+## Switch
+
+> bus vs **star**
+>
+> broadcast domain을 분리한다.
+>
+> host 입장에서는 carrier sense를 했을 때 항상 조용하다.
+
+- switch내에 switch table이 존재하여 어떤 interface에 host가 존재하는지 알고있다.
+- switch table을 얻기 위해 `self-running`이 이루어진다.
+  - frame을 받았을 때 frame의 source address를 보고 하나를 배운다.
+  - destination address(MAC)을 모른다면 flood(주소 정보를 아는 interface 말고 모든 interface에 다 보낸다.)
+- switch도 한정된 interface 개수만 호환하기 때문에 `계층화`를 시켜 연결한다.
+- switch가 하는 일을 `switching` 이라고 한다.
+- switch에게 MAC address는 없다.
+
+<br>
+
