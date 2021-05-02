@@ -296,7 +296,7 @@ console.log(arr); // [2, 3, 4]
 const arr = [1, 2, 3];
 
 const result = arr.splice(1, 1, 3, 4); // 인덱스 1부터 1개의 요소를 제거하고 3, 4을 추가한다.
-// 배열로 반환된다.
+// 지운 요소가 배열로 반환된다.
 
 console.log(result); // 2
 console.log(arr;) // [1, 3, 4, 3]
