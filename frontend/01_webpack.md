@@ -257,7 +257,214 @@ $ npm run build
     }
     ```
 
-    
+
+<br>
+
+## 4. 플러그인
+
+로더가 파일 단위로 처리하는 반면 플로그인은 번들된 결과물의 후처리를 진행한다. **번들된 자바스크립트를 난독화 한다거나 특정 테스트를 추출하는 용도로 사용한다.**
+
+플러그인을 직접 사용하는 일은 거의 없고 주로 사용하는 플러그인에 대해 알아보자.
+
+<br>
+
+### 4.1 자주 사용하는 플러그인
+
+#### BannerPlugin
+
+빌드한 결과물에 정보나 커밋 버전을 추가할 수 있다.
+
+- ` webpack.config.js`
+
+  ```javascript
+  const webpack = require('webpack');
+  
+  module.exports = {
+    plugins: [
+      new webpack.BannerPlugin({
+        banner: 'hi im banner',
+      })
+    ]
+  ```
+
+- 현재 날짜 정보, 커밋 정보, commit한 user 정보를 넣어보자.
+
+  ```javascript
+  const webpack = require('webpack');
+  const childProcess = require('child_process') // terminal 명령어를 실행하게 해준다.
+  
+  module.exports = {
+    plugins: [
+      new webpack.BannerPlugin({
+        banner: `
+  	  Build Date: ${new Date().toLocaleString()}
+  	  Commit Vers: ${childProcess.execSync('git rev-parse --short HEAD')}
+  	  Author: ${childProcess.execSync('git config user.name')}
+  	  `
+      })
+    ]
+  ```
+
+<br>
+
+#### DefinePlugin
+
+프론트엔드 개발은 개발환경과 운영환경으로 나누어서 운영한다. 환경에 따라 API 서버 주소가 다를 수 있다. 같은 소스 코드를 두 환경에서 배포하기 위해서는 **환경 의존적인 정보를 소스가 아닌 곳에 관리하는 것이 좋다.** 배포할 때마다 코드를 수정하는 것이 매우 곤란하기 때문이다.
+
+- `webpack.config.js`
+
+  ```javascript
+  const webpack = require("webpack")
+  
+  export default {
+    plugins: [new webpack.DefinePlugin({
+        'api.domain': JSON.stringify('http://dev.api.domain.com')
+    })],
+  }
+  ```
+
+<br>
+
+#### HtmlTemplatePlugin
+
+`HtmlWebpackPlugin`은 HTML 파일을 후처리하는데 사용한다. 빌드 타임의 값을 넣거나 코드를 압축할수 있다. 이를 통해서 index.html 파일을 동적으로 생성할 수 있다. 써드 파티 패키지이기 때문에 패키지를 다운로드 해야한다.
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm install -D html-webpack-plugin
+  ```
+
+- index.html을 src 폴더로 옮긴 뒤 수정한다.
+
+  ```html
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <title>타이틀<%= env %></title>
+    </head>
+    <body>
+      <!-- 로딩 스크립트 제거 -->
+      <!-- <script src="dist/main.js"></script> -->
+    </body>
+  </html>
+  ```
+
+  - `<%= env %>`를 통해서 전달 받은 env 변수 값을 출력할 수 있다.
+  - 웹팩으로 빌드한 결과물을 자동적으로 주입해주기 때문에 스크립트 코드도 제거한다.
+
+- `webpack.config.js`
+
+  ```javascript
+  const HtmlWebpackPlugin = require('html-webpack-plugin');
+  
+  module.exports {
+    plugins: [
+      new HtmlWebpackPlugin({
+        template: './src/index.html', // 템플릿 경로를 지정
+        templateParameters: { // 템플릿에 주입할 파라매터 변수 지정
+          env: process.env.NODE_ENV === 'development' ? '(개발용)' : '',
+        },
+      })
+    ]
+  }
+  ```
+
+- 운영환경에서는 불필요한 주석과 빈칸을 제거하는 것이 좋다.
+
+  ```javascript
+  new HtmlWebpackPlugin({
+      minify: process.env.NODE_ENV === 'production' ? {
+          collapseWhitespace: true, // 빈칸 제거
+          removeComments: true, // 주석 제거
+      } : false, // 운영 환경이 아닐 때는 제거하지 않는다.
+  })
+  ```
 
   
+
+<br>
+
+#### CleanWebpackPlugin
+
+빌드 이전의 결과물을 제거하는 플러그인이다. 이전 빌드내용이 덮어 씌여지면 상관없지만 그렇지 않다면 여전히 아웃풋 폴더에 남아있을 수 있다.
+
+써드 파티 패키지이므로 다운로드를 해야한다.
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm install -D clean-webpack-plugin
+  ```
+
+- `webpack.config.js`
+
+  ```javascript
+  const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+  // default로 export되는 것이 아니기 때문에 구조 분해 할당을 통해 받아온다.
+  
+  module.exports= {
+      plugins: [new CleanWebpackPlugin],
+  }
+  ```
+
+
+
+<br>
+
+#### MiniCssExtractPlugin
+
+스타일시트가 많아지면 하나의 자바스크립트 결과물로 만드는 것이 부담일 수 있다. 번들 결과에서 스타일시트 코드만 뽑아 별도의 css 파일로 만들어 분리하는 것이 좋다.
+
+브라우저에서 큰 파일 하나를 로드하는 것보다 여러개의 작은 파일을 동시에 다운로드 하는 것이 빠르기 때문이다.
+
+써드 파티 패키지이므로 다운로드를 해야한다.
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm install -D mini-css-extract-plugin
+  ```
+
+- `webpack.config.js`
+
+  ```javascript
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  
+  module.exports = {
+      plugins: [
+          ...(process.env.NODE_ENV === 'production'
+          ? [new MiniCssExtractPlugin({ filename: `[name].css`})]
+          : []),
+      ],
+  }
+  ```
+
+- 프로덕션 환경에서는 별도의 css 파일을 추출하는 플러그인을 적용하였으므로 다른 로더가 필요하다.
+
+  ```javascript
+  module.exports = {
+      module: {
+          rules: [
+              {
+                  test: /\.css$/,
+                  use: [
+                      process.env.NODE_ENV === 'production'
+                       ? MiniCssExtractPlugin.loader
+                       : "style-loader",
+                      "css-loader"
+                  ]
+              }
+          ]
+      }
+  }
+  ```
+
+  
+
+
+
+
+
+
 
