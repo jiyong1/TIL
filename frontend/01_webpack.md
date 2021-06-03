@@ -158,104 +158,118 @@ $ npm run build
 
 ### 3.3 자주 사용하는 로더
 
-- `css-loader` : css 파일을 javascript 모듈처럼 사용할 수 있게 해주는 로더
+#### css-loader
 
-  - 로더 설치
+ css 파일을 javascript 모듈처럼 사용할 수 있게 해주는 로더
 
-    ```bash
-    $ npm install -D css-loader
-    ```
+- 로더 설치
 
-  - 웹팩 설정에 로더를 추가한다.
+  ```bash
+  $ npm install -D css-loader
+  ```
 
-    ```javascript
-    module.exports = {
-      module: {
-        rules: [
-          {
-            test: /\.css$/, // .css 확장자로 끝나는 모든 파일
-            use: ["css-loader"], // css-loader를 적용한다
-          },
-        ],
-      },
-    }
-    ```
+- 웹팩 설정에 로더를 추가한다.
+
+  ```javascript
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.css$/, // .css 확장자로 끝나는 모든 파일
+          use: ["css-loader"], // css-loader를 적용한다
+        },
+      ],
+    },
+  }
+  ```
 
   - 이를 브라우저에 적용시키기 위해서는 `style-loader`가 필요하다.
 
-- `style-loader` : 처리된 javascript 문자열 css 코드를 html에 주입시켜 브라우저에 스타일이 적용되게 해주는 로더
+<br>
 
-  - 로더 설치
+#### style-loader
 
-    ```bash
-    $ npm install -D style-loader
-    ```
+처리된 javascript 문자열 css 코드를 html에 주입시켜 브라우저에 스타일이 적용되게 해주는 로더
 
-  - 로더 추가
+- 로더 설치
 
-    ```javascript
-    module.exports = {
-      module: {
-        rules: [
-          {
-            test: /\.css$/,
-            use: ["style-loader", "css-loader"], // style-loader를 앞에 추가한다, 배열의 뒤에서 부터 loader를 실행한다.
+  ```bash
+  $ npm install -D style-loader
+  ```
+
+- 로더 추가
+
+  ```javascript
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"], // style-loader를 앞에 추가한다, 배열의 뒤에서 부터 loader를 실행한다.
+        },
+      ],
+    },
+  }
+  ```
+
+<br>
+
+#### file-loader
+
+image파일을 모듈로 사용할 수 있게 해주는 로더, 사용할 파일을 output경로로 이동시킨다.
+
+- 로더 설치
+
+  ```bash
+  $ npm install -D file-loader
+  ```
+
+- 로더 추가
+
+  ```javascript
+  module.exports = {
+    module: {
+      rules: [
+        {
+          test: /\.png$/, // .png 확장자로 마치는 모든 파일
+          loader: "file-loader",
+          options: {
+            publicPath: "./dist/", // prefix를 아웃풋 경로로 지정
+            name: "[name].[ext]?[hash]", // 파일명 형식, cashe 무력화를 위해서 매번 달라지는 hash 값을 입력한다.
           },
-        ],
-      },
-    }
-    ```
+        },
+      ],
+    },
+  }
+  ```
 
-- `file-loader` : image파일을 모듈로 사용할 수 있게 해주는 로더, 사용할 파일을 output경로로 이동시킨다.
+<br>
 
-  - 로더 설치
+#### url-loader
 
-    ```bash
-    $ npm install -D file-loader
-    ```
+작은 이미지를 여러 개 사용한다면 **Data URI Scheme**을 이용하는 방법이 더 나은 경우도 있다. 파일을 base64로 인코딩해서 javascript 문자열로 변환한다. 처리할 파일의 limit을 둬서 일정 파일의 크기 이하일때만 인코딩을 수행한다.
 
-  - 로더 추가
+- 로더 설치
 
-    ```javascript
-    module.exports = {
-      module: {
-        rules: [
-          {
-            test: /\.png$/, // .png 확장자로 마치는 모든 파일
-            loader: "file-loader",
-            options: {
-              publicPath: "./dist/", // prefix를 아웃풋 경로로 지정
-              name: "[name].[ext]?[hash]", // 파일명 형식, cashe 무력화를 위해서 매번 달라지는 hash 값을 입력한다.
-            },
-          },
-        ],
-      },
-    }
-    ```
+  ```bash
+  $ npm install -D url-loader
+  ```
 
-- `url-loader` : 작은 이미지를 여러 개 사용한다면 **Data URI Scheme**을 이용하는 방법이 더 나은 경우도 있다. 파일을 base64로 인코딩해서 javascript 문자열로 변환한다. 처리할 파일의 limit을 둬서 일정 파일의 크기 이하일때만 인코딩을 수행한다.
+- 로더 추가
 
-  - 로더 설치
-
-    ```bash
-    $ npm install -D url-loader
-    ```
-
-  - 로더 추가
-
-    ```javascript
-    {
-      test: /\.png$/,
-      use: {
-        loader: 'url-loader', // url 로더를 설정한다
-        options: {
-          publicPath: './dist/', // file-loader와 동일
-          name: '[name].[ext]?[hash]', // file-loader와 동일
-          limit: 20000 // 20kb 미만 파일만 data url로 처리
-        }
+  ```javascript
+  {
+    test: /\.png$/,
+    use: {
+      loader: 'url-loader', // url 로더를 설정한다
+      options: {
+        publicPath: './dist/', // file-loader와 동일
+        name: '[name].[ext]?[hash]', // file-loader와 동일
+        limit: 20000 // 20kb 미만 파일만 data url로 처리
       }
     }
-    ```
+  }
+  ```
 
 
 <br>
@@ -264,7 +278,7 @@ $ npm run build
 
 로더가 파일 단위로 처리하는 반면 플로그인은 번들된 결과물의 후처리를 진행한다. **번들된 자바스크립트를 난독화 한다거나 특정 테스트를 추출하는 용도로 사용한다.**
 
-플러그인을 직접 사용하는 일은 거의 없고 주로 사용하는 플러그인에 대해 알아보자.
+플러그인을 직접 작성하는 일은 거의 없고 주로 사용하는 플러그인에 대해 알아보자.
 
 <br>
 
@@ -404,7 +418,7 @@ $ npm run build
   // default로 export되는 것이 아니기 때문에 구조 분해 할당을 통해 받아온다.
   
   module.exports= {
-      plugins: [new CleanWebpackPlugin],
+      plugins: [new CleanWebpackPlugin()],
   }
   ```
 
