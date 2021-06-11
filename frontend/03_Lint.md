@@ -145,5 +145,119 @@ ESLint에서 제공되는 기본 설정 이외에도 자주 사용되는 것이 
 
 ESLint 설정 파일은 사실 `--init` 옵션을 추가하여 손쉽게 구성할 수 있다.
 
+<br>
+
+<br>
+
+## 2. Prettier
+
+프리티어는 코드를 더 예쁘게 만든다. ESLint의 역할 중 포매팅과 겹치는 부분이 있지만 프리티어는 일관적인 스탕일로 코드를 다듬는데 돕는다. 하지만 코드 품질과 관련된 기능은 하지 않는 것이 ESLint와 차이점이다.
+
+<br>
+
+### 설치 및 사용법
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm i -D prettier
+  ```
+
+- 코드 작성
+
+  ```javascript
+  // app.js
+  console.log('hi')
+  ```
+
+- `prettier`로 검사
+
+  ```bash
+  $ npx prettier app.js --write
+  ```
+
+  - `--write` 옵션을 추가하면 파일을 재작성 한다.
+
+- 결과
+
+  ```javascript
+  // app.js
+  console.log("hi");
+  ```
+
+  
+
+작은 따옴표를 큰 따옴표를 변경했다. 뿐만 아니라 명령어 뒤에 세미콜론도 추가되었다.
+
+프리티어는 ESLint와 다르게 규칙이 미리 세팅되어 있기 때문에 설정파일 없이도 바로 사용할 수 있다.
+
+프리티어는 ESLint보다 포매팅 품질이 더 좋다. 사람에게 더 친숙하도록 작성된다.
+
+<br>
+
+### 통합 방법
+
+그렇다고 해서 ESLint를 사용하지 않아도 되는 것은 아니다. **포맷팅**은 프리티어에게 맡기고 코드 품질과 관련된 검사는 ESLint의 몫이기 때문이다.
+
+프리티어는 ESLint와 통합 방법을 제공한다. `eslint-config-prettier`는 프리티어와 충돌하는 ESLint 규칙을 끄는 역할을 한다. 
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm i -D eslint-config-prettier
+  ```
+
+- 환경설정 파일
+
+  ```javascript
+  // .eslintrc.js
+  {
+      extends: [
+          "eslint:recommended",
+          "eslint-config-prettier"
+      ]
+  }
+  ```
+
+- 코드
+
+  ```javascript
+  // app.js
+  var foo = "" // 사용하지 않는 변수, ESLint가 검사
+  console.log();;;; // 중복 세미콜론, prettier가 검사
+  ```
+
+이 후 두 개의 명령어를 실행해 코드를 검사한다.
+
+<br>
+
+두 번의 명령어를 수행하지 않고 한번에 수행하기 위해 `eslint-plugin-prettier`를 규칙으로 추가한다. 프리티어의 모든 규칙이 ESLint로 들어오기 때문에 ESLint만 실행하면 된다.
+
+- 패키지 다운로드
+
+  ```bash
+  $ npm i -D eslint-plugin-prettier
+  ```
+
+- 환경설정 파일
+
+  ```javascript
+  // .eslintrc.js
+  {
+      plugins: [
+          "prettier"
+      ],
+      rules: {
+          "prettier/prettier": "error"
+      }
+  }
+  ```
+
+이제는 ESLint만 실행해도 프리티어 포매팅 기능을 가져갈 수 있다.
+
+
+
+
+
 
 
