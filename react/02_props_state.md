@@ -56,7 +56,119 @@ export default App;
 
 ---
 
+<br>
 
+### prop-types
+
+> 프로퍼티의 자료형을 선언하는 방법은 리액트에서 제공하는 prop-types를 이용하면 된다.
+
+프로퍼티는 자바스크립트의 자료형을 모두 사용할 수 있다. 이때 프로퍼티의 자료형을 미리 선언해주는 것이 좋다.
+
+프로퍼티의 자료형을 미리 선언하면 리액트 엔진이 프로퍼티로 전달하는 값의 변화를 효율적으로 감지할 수 있고, 코드를 작성하는 개발자의 human error를 경고 메세지로 알려준다.
+
+다음 코드는 객체형 프로퍼티를 가지는 컴포넌트이다.
+
+```jsx
+// MyName.jsx
+import React, { Component } from 'react';
+import PropTypes from 'prop-types'
+
+class MyName extends Component {
+    render() {
+        return (
+        	<div>
+            	안녕하세요! 제 이름은 <b>{this.props.obj.name}</b> 입니다.
+            </div>
+        );
+    }
+}
+
+// 자료형을 선언
+MyName.propTypes = {
+    name: PropTypes.object,
+}
+
+export default MyName;
+```
+
+```jsx
+// App.js
+import MyName from './components/MyName.jsx';
+
+function App() {
+  const propObj = {
+    name: 'jiyong',
+  }
+  return (
+    <div className="App">
+      <MyName obj={propObj} />
+    </div>
+  );
+}
+
+export default App;
+
+```
+
+<br>
+
+이외에도 다양한 프로퍼티를 사용할 수 있다.
+
+- PropTypes.bool
+- PropTypes.number
+- PropTypes.arrayOf
+- PropTypes.object
+- PropTypes.node
+- PropTypes.func
+
+<br>
+
+`isRequired`를 사용하여 필수 프로퍼티를 사용할 수 있습니다.
+
+```jsx
+// App.js
+import MyName from './components/MyName.jsx';
+
+function App() {
+  return (
+    <div className="App">
+      <MyName name={"지용"} />
+    </div>
+  );
+}
+
+export default App;
+```
+
+```jsx
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+
+class MyName extends Component {
+    render() {
+        return (
+            <div>
+                안녕하세요! 제 이름은 <b>{this.props.name}</b> 입니다.
+                <br/>
+                나이는 <b>{this.props.age}</b>살 입니다.
+            </div>
+        );
+    }
+}
+
+MyName.propTypes = {
+    name: PropTypes.string,
+    age: PropTypes.number.isRequired,
+}
+
+export default MyName;
+```
+
+- 결과 (오류)
+
+  ![](02_props_state.assets/isrequired.PNG)
+
+<br>
 
 ### defaultProps
 
@@ -67,7 +179,7 @@ export default App;
 <br>
 
 ```jsx
-// MyName.js
+// MyName.jsx
 
 import React, { Component } from 'react';
 
