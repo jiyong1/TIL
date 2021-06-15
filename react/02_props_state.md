@@ -336,6 +336,10 @@ class Counter extends Component{
 
 > state 값을 바꾸기 위해서는  setState를 무조건 거쳐야 한다.
 
+state값을 직접 변경하면 안되는 이유는 render() 함수로 화면을 그려주는 시점은 리액트 엔진이 정하기 때문이다. 즉, state를 직접 변경하더라도 render() 함수는 새로 호출되지 않는다. 하지만 `setState()` 함수를 호출하여 state 값을 변경하면 리액트 엔진이 자동으로 render() 함수를 호출하므로 화면에 변경된 state 값을 새롭게 출력할 수 있다.
+
+실제로 `setState()`함수로 state 값을 변경하면 몇 단계의 검증 과정을 거쳐 render() 함수를 호출한다.
+
 <br>
 
 ```jsx
@@ -391,6 +395,7 @@ this.setState({
 
 - `비구조화 할당`으로 작성하기
   - 좀 더 멋진 문법으로 작성해본다..
+- setState() 함수의 인자로 함수를 전달하면 이전 state 값을 따로 읽는 과정을 생략할 수 있다.
 
 ```jsx
 handleIncrease = () => {
@@ -421,7 +426,7 @@ handleDecrease = () => {
   - `onmousedown : onMouseDown`
   - ...
 
-
-
 <br>
+
+
 
