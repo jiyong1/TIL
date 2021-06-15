@@ -2,11 +2,11 @@
 
 > 컴포넌트가 브라우저에서 나타날 때, 사라질 때, 업데이트 될 떄, 호출되는 API
 
+![](03_LifeCycle_API.assets/lifecycle.jpg)
+
 - `Mounting` : 컴포넌트가 브라우저에 나타날 때
 - `Updating` : 컴포넌트의 props 나 state가 바뀌었을 때
 - `Unmounting` : 컴포넌트가 없어질 때
-
-
 
 <br>
 
@@ -56,16 +56,18 @@ componentDidMount() {
 
 
 
-### static getDerivedStateFromProps()
+### static getDerivedStateFromProps(props, state)
 
 props로 받아온 값은 state로 동기화 하는 작업을 해줘야 하는 경우 사용된다.
 
+`getDerivedStateFromProps()` 함수는 정적 함수이다. 따라서 함수 안에서 **this.props나 this.state**로 state와 props에 접근할 수 없다. 만약 각 값에 접근해야 하는 경우 반드시 인자로 전달된 **props, state**를 이용해야 한다.
 
+이 함수는 상위 컴포넌트에서 전달받은 프로퍼티로 state 값을 연동할 때 주로 사용하며, 반환값으로 state를 변경한다.
 
 ```javascript
 static getDerivedStateFromProps(nextProps, prevState) {
   // 여기서는 setState 를 하는 것이 아니라
-  // 특정 props 가 바뀔 때 설정하고 설정하고 싶은 state 값을 리턴하는 형태로
+  // 특정 props 가 바뀔 때 설정하고 싶은 state 값을 리턴하는 형태로
   // 사용됩니다.
   /*
   if (nextProps.value !== prevState.value) {
@@ -78,7 +80,7 @@ static getDerivedStateFromProps(nextProps, prevState) {
 
 <br>
 
-### shouldComponentUpdate
+### shouldComponentUpdate(nextProps, nextState)
 
 ```javascript
 shouldComponentUpdate(nextProps, nextState) {
@@ -89,9 +91,11 @@ shouldComponentUpdate(nextProps, nextState) {
 ```
 
 - 컴포넌트를 최적화하는 작업에서 유용하게 사용된다.
-- 리액트에서는 **변화가 발생하는 부분만 업데이트를 해줘서 성능이 좋다.
+- 리액트에서는 **변화가 발생하는 부분**만 업데이트를 해줘서 성능이 좋다.
 - 하지만, 변화가 발생한 부분만 감지하기 위해서는 Virtual DOM에 한번 그려줘야한다.
 - CPU 처리량을 줄여주기 위해서 Virtual DOM에 리렌더링 하는 것도 방지하기 위해서는 `shoudComponentUpdate`를 작성해야 한다.
+  - 리액트 성능에 영향을 많이 준다.
+- 화면 변경을 위해 검증 작업을 하는 경우 이 함수를 사용한다.
 
 
 
@@ -99,9 +103,11 @@ shouldComponentUpdate(nextProps, nextState) {
 
 
 
-### getSnapshotBeforeUpdate()
+### getSnapshotBeforeUpdate(prevProps, prevState)
 
-DOM 변화가 일어나기 직전의 DOM 상태를 가져오고, 여기서 return 하는 값은 `componentDidUpdate` 에서 3번째 파라미터로 받아올 수 있게 된다.
+**실제 DOM 변화가 일어나기 직전의 DOM 상태를 가져오고**, 여기서 return 하는 값은 `componentDidUpdate` 에서 3번째 파라미터로 받아올 수 있게 된다.
+
+출력될 엘리먼트의 크기 또는 스크롤 위치 등의 DOM 정보에 접근할 때 사용됩니다.
 
 ```javascript
 getSnapshotBeforeUpdate(prevProps, prevState) {
@@ -132,9 +138,11 @@ componentDidUpdate(prevProps, prevState, snapshot) {
 
 <br>
 
-### componentDidUpdate
+### componentDidUpdate(prevProps, prevState, snapshot)
 
 컴포넌트에서 render() 를 호출하고난 다음에 발생한다.
+
+이전 프로퍼티와 이전 state값과 함께 **getSnapshotBeforeUpdate()** 함수에서 반환된 값을 인자로 전달받습니다. 이 값들을 이용하여 스크롤 위치를 옮기거나 커서를 이동시키는 등의 DOM 정보를 변경할 때 사용됩니다.
 
 <br>
 
@@ -186,3 +194,76 @@ componentDidCatch(error, info) {
 - 컴포넌트의 부모가 발생하는 에러를 잡아내므로 부모에 선언해준다.
 - `error` : 어떤 error가 발생했는지
 - `info` : 어디서 error가 발생했는지
+
+
+
+<br>
+
+## 실험
+
+> 생명주기 함수의 실행 과정을 살펴보자
+
+```jsx
+// ./components/LifeCycleEx.jsx
+import React, { Component } from 'react';
+
+class LifeCycleEx extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    console.log('constructor 호출!');
+  }
+  static getDerivedStateFromProps() {
+    console.log('getDerivedStateFromProps 호출!');
+    return {};
+  }
+  componentDidMount() {
+    console.log('componentDidMount 호출!');
+    this.setState({updated: true});
+  }
+  shouldComponentUpdate() {
+    console.log('shouldComponentUpdate 호출!');
+    return true;
+  }
+  getSnapshotBeforeUpdate() {
+    console.log('getSnapshotBeforeUpdate 호출!')
+    return {}
+  }
+  componentDidUpdate() {
+    console.log('componentDidUpdate 호출!')
+  }
+  render() {
+    console.log('render 호출!');
+    return (
+      <div>
+        
+      </div>
+    );
+  }
+}
+
+export default LifeCycleEx;
+```
+
+<br>
+
+```javascript
+// App.js
+import LifeCycleEx from "./components/LifeCycleEx";
+
+function App() {
+  return (
+    <div className="App">
+      <LifeCycleEx />
+    </div>
+  );
+}
+
+export default App;
+```
+
+<br>
+
+- 결과
+
+  ![](03_LifeCycle_API.assets/lifecycleex.PNG)
