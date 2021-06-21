@@ -114,3 +114,135 @@ export default function withHOC(WrappedComponent) {
 - 결과
 
   ![](07_higher_order_component.assets/higherorder.PNG)
+
+<br>
+
+<br>
+
+## 3. 하이어오더 컴포넌트 라이브러리
+
+`recompose`라이브러리는 자주 사용되는 패턴의 하이어오더 컴포넌트를 모아둔 라이브러리이다.
+
+`recompose`를 사용하면서 함수형 컴포넌트의 확장기능을 이해해보자.
+
+- 라이브러리 다운로드
+
+  ```bash
+  $ npm i recompose
+  ```
+
+<br>
+
+### branch
+
+`branch()`함수를 통해 조건에 따라 컴포넌트를 렌더링 할 수 있다.
+
+- 기본 구현 방법
+
+  ```jsx
+  import branch from 'recompose/branch'
+  
+  branch(
+      condition: props => boolean,
+      left: HigherOrderComponent
+      [right: HigherOrderComponent]
+  )(WrappedComponent)
+  ```
+
+  - **condition** : 출력 조건을 정의한 함수
+  - **left** : 출력 조건 함수가 참값일 때 출력될 컴포넌트
+  - **right** : 거짓일 때 출력될 컴포넌트
+    - 생략 가능하며, 생략된 경우 WrappedComponent를 그대로 출력한다.
+
+- 예제 (Button 컴포넌트 사용)
+
+  - `branch.jsx`
+
+    ```jsx
+    import React from 'react';
+    import branch from 'recompose/branch';
+    
+    import Button from './Button';
+    
+    function isLoading(props) {
+        return props.isLoading;
+    }
+    
+    function LoadingButton(props) {
+        return <Button disabled>로딩 중</Button>
+    }
+    
+    export default branch(
+        isLoading,
+        () => LoadingButton
+    )(Button);
+    ```
+
+  - 스토리 생성
+
+    ```jsx
+    import React from 'react';
+    import { storiesOf } from '@storybook/react';
+    
+    import BranchButton from '../components/branch';
+    
+    storiesOf('branch test', module)
+    .add('loading', () => <BranchLoadingButton isLoading>안녕하세요</BranchLoadingButton>)
+    .add('Not loading', () => <BranchLoadingButton>안녕하세요</BranchLoadingButton>)
+    ```
+
+  - 결과
+
+    ![](07_higher_order_component.assets/branchloading.PNG)
+
+    ![](07_higher_order_component.assets/branchnotloading.PNG)
+
+<br>
+
+### withState
+
+함수형 컴포넌트는 state를 사용할 수 없지만, 콜백 함수와 프로퍼티를 활용하여 우회적으로 사용할 수 있다. 
+
+`withState`는 함수형 컴포넌트를 클래스 컴포넌트로 변환하지 않아도 state를 사용할 수 있게끔 해준다.
+
+- `withState.jsx`
+
+  ```jsx
+  import React from 'react';
+  import withState from 'recompose/withState';
+  import Button from './Button';
+  
+  export const withCountState = withState('count', 'setCount', 0);
+  
+  function Counter({ count, setCount }) {
+      const increaseCount = () => setCount(c => c+1);
+      return (
+          <div>
+              <span>{count}</span>
+              <Button onPress={increaseCount}>1 증가</Button>
+          </div>
+      )
+  }
+  
+  export const StateWithCounter = withCountState(Counter);
+  ```
+
+  - `withState`의 인자로 3가지가 들어간다.
+    - state 이름, stateUpdater(함수명), 초기 값
+  - **count** 상태를 변경하기 위해 이전에 전달한 함수명으로 함수를 호출하고 인자로 콜백 함수를 전달한다.
+  - 자동적으로 count가 변경된다.
+
+- story
+
+  ```jsx
+  ...
+  import { StateWithCounter } from '../components/withState';
+  
+  ...
+  .add('withState Counter', () => <StateWithCounter />)
+  ```
+
+- 결과
+
+  ![](07_higher_order_component.assets/withstatecounter.PNG)
+
